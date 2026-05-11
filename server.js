@@ -20,22 +20,9 @@ const pool = mysql.createPool({
 });
 
 //Routes
-
 app.get('/', (req, res) => {
   res.json({message: 'Hej!', environment: ENV});
 });
-
-//Hämta all data i databasen 
-app.get("/api", async (req,res) => {
-    try {
-        const [rows] = await pool.execute("SELECT * FROM tag;");
-        res.json(rows);
-    } catch(error){
-      console.error(error);
-      res.status(500).json({ error: "Kunde inte hämta databas." });
-    }
-});
-
 
 //Hämta alla tåg
 app.get("/api/tag", async (req, res) => {
@@ -115,9 +102,6 @@ app.get("/api/tag/:station", async (req, res) => {
   }
 });
 
-//Skapa meta-data
-app.get("/api/")
-
 //Skapa nytt tåg
 app.post("/api/tag", async (req, res) => {
   const {
@@ -144,28 +128,26 @@ app.post("/api/tag", async (req, res) => {
   }
 
   try {
-    const sql = `INSERT INTO Tagnr (Tagnr, Typ, Avgangsstation, Slutstation, Avgangstid, Ankomsttid, Vandningsinfo) VALUES (?,?,?,?,?,?,?)`;
+    const sql = `INSERT INTO Tag (Tagnr, Typ, Avgangsstation, Slutstation, Avgangstid, Ankomsttid, Vandningsinfo) VALUES (?,?,?,?,?,?,?)`;
 
     await pool.execute(sql, [
       Tagnr,
-      Typ,
+      Typ || null,
       Avgangsstation,
       Slutstation,
-      Avgangstid,
-      Ankomsttid,
-      Vandningsinfo,
+      Avgangstid || null,
+      Ankomsttid || null,
+      Vandningsinfo || null,
     ]);
 
     res.status(201).json({ message: `Tåg ${Tagnr} har skapats!` });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Gick inte att spara tåget i databasen..." });
+    res.status(500).json({ error: "Databasfel. Gick inte att spara tåget i databasen..." });
   }
 });
 
-
 //Starta servern
-
 app.listen(PORT, () => {
   console.log(`Servern tuffar fram på http://localhost:${PORT} i ${ENV}-läge`);
 });
