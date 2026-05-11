@@ -4,6 +4,7 @@ import mysql from "mysql2/promise";
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
+const ENV = process.env.NODE_ENV ?? 'development';
 
 app.use(express.json());
 
@@ -19,11 +20,36 @@ const pool = mysql.createPool({
 });
 
 //Routes
+
+app.get('/', (req, res) => {
+  res.json({message: 'Hej!', environment: ENV});
+});
+
+//Hämta all data i databasen 
+app.get("/api", async (req,res) => {
+    try {
+        const [rows] = await pool.execute("SELECT * FROM tag;");
+        res.json(rows);
+    } catch(error){
+      console.error(error);
+      res.status(500).json({ error: "Kunde inte hämta databas." });
+    }
+});
+
+
 //Hämta alla tåg
 app.get("/api/tag", async (req, res) => {
   try {
     const [rows] = await pool.execute("SELECT * FROM tag ORDER BY tagnr ASC;");
-    res.json(rows);
+    // res.json(rows);
+    res.json({
+      meta:{
+        antal_tag: rows.length,
+        status: "success",
+        tidpunkt: new Date().toLocaleTimeString()
+      },
+      data: rows
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Kunde inte hämta tåglistan." });
@@ -38,6 +64,28 @@ app.get("/api/vagnstyp", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Kunde inte hämta vagnstyperna." });
+  }
+});
+
+//Hämta alla vagnar
+app.get("/api/vagnar", async (req, res) => {
+  try {
+    const [rows] = await pool.execute("SELECT * FROM vagnar ORDER BY tagnr;");
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Kunde inte hämta vagnarna." });
+  }
+});
+
+//Visa antal vagnar per tåg
+app.get("/api/vagnar/antal", async (req, res) => {
+  try {
+    const [rows] = await pool.execute("SELECT t.tagnr, COUNT(v.vagnsnr) AS antal_vagnar FROM tag t JOIN vagnar v ON t.tagnr=v.tagnr GROUP BY t.tagnr;");
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Kunde inte hämta vagnarna." });
   }
 });
 
@@ -66,6 +114,9 @@ app.get("/api/tag/:station", async (req, res) => {
     res.status(500).json({ error: "Kunde inte hämta avgångstiderna." });
   }
 });
+
+//Skapa meta-data
+app.get("/api/")
 
 //Skapa nytt tåg
 app.post("/api/tag", async (req, res) => {
@@ -112,6 +163,9 @@ app.post("/api/tag", async (req, res) => {
   }
 });
 
+
+//Starta servern
+
 app.listen(PORT, () => {
-  console.log(`Servern tuffar fram på http://localhost:${PORT}`);
+  console.log(`Servern tuffar fram på http://localhost:${PORT} i ${ENV}-läge`);
 });
