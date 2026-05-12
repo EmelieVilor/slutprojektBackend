@@ -1,7 +1,8 @@
 import pool from "../config/db.js";
+import errorHandler from "../middleware/errorHandler.js";
 
 //Hämta hela tåg-tabellen
-export const getAllTag = async (req, res) => {
+export const getAllTag = async (req, res, next) => {
   try {
     const [rows] = await pool.execute("SELECT * FROM tag ORDER BY tagnr ASC;");
     res.json({
@@ -13,13 +14,12 @@ export const getAllTag = async (req, res) => {
       data: rows,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Kunde inte hämta tåglistan." });
+    next(error); // Skickar felet till errorHandler.js
   }
 };
 
 //Hämta alla vagnstyper
-export const getAllVagnstyper = async (req, res) => {
+export const getAllVagnstyper = async (req, res, next) => {
   try {
     const [rows] = await pool.execute("SELECT typ FROM vagnstyp;");
     res.json({
@@ -37,7 +37,7 @@ export const getAllVagnstyper = async (req, res) => {
 };
 
 //Hämta alla vagnar
-export const getAllVagnar = async (req, res) => {
+export const getAllVagnar = async (req, res, next) => {
   try {
     const [rows] = await pool.execute("SELECT * FROM vagnar ORDER BY tagnr;");
     res.json({
@@ -49,26 +49,24 @@ export const getAllVagnar = async (req, res) => {
       data: rows,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Kunde inte hämta tåglistan." });
+     next(error);
   }
 };
 
 //Hämta alla vagnar per tåg
-export const getTagVagnar = async (req, res) => {
+export const getTagVagnar = async (req, res, next) => {
   try {
     const [rows] = await pool.execute(
       "SELECT t.tagnr, COUNT(v.vagnsnr) AS antal_vagnar FROM tag t JOIN vagnar v ON t.tagnr=v.tagnr GROUP BY t.tagnr;",
     );
     res.json(rows);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Kunde inte hämta tågens vagnar" });
+     next(error);
   }
 };
 
 // Hämta alla tåg från vald station
-export const getTagStation = async (req, res) => {
+export const getTagStation = async (req, res, next) => {
   const valdStation = req.params.station;
 
   try {
@@ -84,12 +82,12 @@ export const getTagStation = async (req, res) => {
     }
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: "Kunde inte hämta avgångstiderna." });
+     next(error);
   }
 };
 
 //Skapa nytt tåg
-export const createTag = async (req, res) => {
+export const createTag = async (req, res, next) => {
   const {
     Tagnr,
     Avgangsstation,
@@ -119,6 +117,6 @@ export const createTag = async (req, res) => {
     ]);
     res.status(201).json({ message: `Tåg ${Tagnr} har skapats!` });
   } catch (error) {
-    res.status(500).json({ error: "Databasfel" });
+     next(error);
   }
 };

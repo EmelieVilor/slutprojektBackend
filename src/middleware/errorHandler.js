@@ -4,7 +4,7 @@ import express from 'express';
 
 export const errorHandler = (err, req, res, next) => {
   console.error(err.message);
-  res.status(500).json({ error: 'Internt serverfel.' });
+  res.status(500).json({ error: 'Något gick fel på servern.' });
 };
 
-// handleMySQLError
+export default errorHandler;
