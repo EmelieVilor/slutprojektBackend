@@ -1,8 +1,7 @@
-# Train API
+# Train API 🚅
 
 ## Description
 This is a backend-project built in Node.js/Express handling train data from a MySQL database.
-
 
 ## Tech Stack
 * Node.js
@@ -34,12 +33,11 @@ npm run dev
 
 ## API Endpoints
 
-| Method | Endpoint                          | Description                              |
-| ------ | --------------------------------- | ---------------------------------------- |
-| GET    | `/api/tag`                        | Get all events                           |
-| GET    | `/api/tag/vagnstyp`               | Get a specific event                     |
-| GET    | `/api/tag/vagnar/antal`           | Get all contributions for an event       |
-| GET    | `/api/tag/vagnar`                 | Get all events hosted by a specific user |
-| GET    | `/api/tag/:station`               | Get all invites                          |
-| GET    | `/api/tag`                        | Get all users                            |
-| POST   | `/api/tag`                        | Create a new invite                      |
+| Method | Endpoint                          | Description                                   |
+| ------ | --------------------------------- | ----------------------------------------------|
+| GET    | `/api/tag`                        | Get all trains                                |
+| GET    | `/api/tag/vagnstyp`               | Get all carriage types                        |
+| GET    | `/api/tag/vagnar/antal`           | Get number of carriages per train number      |
+| GET    | `/api/tag/vagnar`                 | Get all carriages                             |
+| GET    | `/api/tag/:station`               | Get all departures from one specific station  |
+| POST   | `/api/tag`                        | Create a new train                            |
