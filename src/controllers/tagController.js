@@ -108,12 +108,12 @@ export const createTag = async (req, res, next) => {
     const sql = `INSERT INTO Tag (Tagnr, Typ, Avgangsstation, Slutstation, Avgangstid, Ankomsttid, Vandningsinfo) VALUES (?,?,?,?,?,?,?)`;
     await pool.execute(sql, [
       Tagnr,
-      Typ,
+      Typ || null,
       Avgangsstation,
       Slutstation,
-      Avgangstid,
-      Ankomsttid,
-      Vandningsinfo,
+      Avgangstid || null,
+      Ankomsttid || null,
+      Vandningsinfo || null,
     ]);
     res.status(201).json({ message: `Tåg ${Tagnr} har skapats!` });
   } catch (error) {
