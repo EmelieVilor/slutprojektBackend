@@ -26,7 +26,7 @@ DB_USER=root
 DB_PASSWORD=Password_for_database
 DB_NAME=Database_name
 ```
-4. **Start the server and lets go!**
+4. **Start the project and lets go!**
 ```bash
 npm run dev 
 ```
